@@ -60,6 +60,8 @@ zone_york_dict = {'RMF': 'residential',
 
 york_gdf['zone_group'] = york_gdf['ZONING'].map(zone_york_dict)
 york_gdf['source'] = 'york'
+valid_york_gdf = york_gdf[york_gdf['zone_group'].isin(['commercial', 'residential'])]
+
 
 # processing JCC data
 jcc_commercial = ['BLDG - Commercial', 'BLDG - Public Building', 'BLDG - Church']
@@ -77,12 +79,14 @@ def classify_zoing(value):
 # Apply the function to create a new 'classification' column
 jcc_gdf['zone_group'] = jcc_gdf['Code'].apply(classify_zoing)
 jcc_gdf['source'] = 'jcc'
+valid_jcc_gdf = jcc_gdf[jcc_gdf['zone_group'].isin(['commercial', 'residential'])]
 
 jcc_gdf.drop(['created_us', 'created_da', 'last_edite', 'last_edi_1', 'County', 'FID_County', 'GIS_Notes', 'FID_LandUs', 'Detail', 'OBJECTID'], axis=1, inplace=True)
 york_gdf.drop(['CHANGE_DAT', 'GlobalID', 'OBJECTID', 'GPIN', 'MAP', 'COND', 'PROFFER'], axis=1, inplace=True)
 
-merged_df = pd.concat([jcc_gdf, york_gdf])
-filtered_df = merged_df[merged_df['zone_group'].isin(['commercial', 'residential'])]
+# merged_df = pd.concat([jcc_gdf, york_gdf])
+# filtered_df = merged_df[merged_df['zone_group'].isin(['commercial', 'residential'])]
+
 
 
 
