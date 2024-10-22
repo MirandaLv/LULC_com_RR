@@ -1,0 +1,36 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.28.15-Firenze">
+  <identifier>buildingfootprint_VA_Oct2024</identifier>
+  <parentidentifier></parentidentifier>
+  <language>ENG</language>
+  <type>dataset</type>
+  <title>buildingfootprint_VA_Oct2024</title>
+  <abstract>The shape and orientation of the ground floor of all structures in a local government. This information is typically compiled from orthoimagery or other aerial photography sources. This representation of the building footprints support the local government basemaps. It also serves as a source for public works, public safety, planning and other agencies that are responsible for the active management of site addresses, facilities, and land use information.
+
+Building footprints are polygon outlines of structures remotely rendered through digitizing of Virginia Base Mapping Program’s digital ortho-photogrammetry imagery, or digitizing of local government subdivision plats. VBMP building footprints are a collection of locally submitted data and as published from the Virginia Geographic Information Network carry no addressing, nor is there any ownership, resident information, or construction specifications provided. VBMP building footprints are not assumed to be of survey quality and carry no guarantees as to accuracy. Even with these restrictions building outlines are a valuable resource for emergency response operations and for community planning. Currently the Virginia Base Mapping Program’s collection of building footprints consists of over 4 million structures. Data input from localities are processed and published quarterly. To date the majority of Virginia’s localities building footprints have been captured but not all.</abstract>
+  <keywords vocabulary="Search keys">
+    <keyword>Planimetric Data</keyword>
+  </keywords>
+  <links/>
+  <history>For more information, see Base Mapping page on the VGIN Website: https://vgin.vdem.virginia.gov/pages/base-mapping.</history>
+  <fees></fees>
+  <constraints type="Limitations of use">The Virginia Base Data layers are intended for cartographic use and spatial analysis only, and not for use as a legal description. Best efforts were undertaken to ensure the correctness of RCL, Address Points, Parcels, Administrative Boundaries, and Building Footprint data throughout the Commonwealth of Virginia, however, all warranties regarding the accuracy of the map data and any representation or inferences derived there from are hereby expressly disclaimed.</constraints>
+  <rights>Virginia Geographic Information Network (VGIN), Virginia local government GIS</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt></wkt>
+      <proj4></proj4>
+      <srsid>0</srsid>
+      <srid>0</srid>
+      <authid></authid>
+      <description></description>
+      <projectionacronym></projectionacronym>
+      <ellipsoidacronym></ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial minx="-79.01952900000000568" maxz="0" dimensions="2" maxy="38.81223800000000068" minz="0" crs="EPSG:4326" miny="38.81200299999999714" maxx="-79.01920200000000705"/>
+  </extent>
+</qgis>
