@@ -123,14 +123,74 @@ def calculate_side_lengths(polygon):
     return min(side_lengths), max(side_lengths)
 
 
-# Assuming the shapefile contains polygons, apply the function to each polygon in the GeoDataFrame
+# Function to calculate the length and width of a polygon using its bounding box (envelope)
+def calculate_length_width(polygon):
+    # Get the bounding box (minimum bounding rectangle) of the polygon
+    minx, miny, maxx, maxy = polygon.bounds
+
+    # Calculate the width (difference in x direction) and length (difference in y direction)
+    width = maxx - minx
+    length = maxy - miny
+
+    # Return the length and width
+    return max(length, width), min(length, width)
+
+
+# Function to calculate rectangular fit for a polygon
+def rectangular_fit(polygon):
+    # Area of the original polygon
+    polygon_area = polygon.area
+
+    # Get the minimum bounding rectangle (MBR) or envelope of the polygon
+    mbr = polygon.envelope
+
+    # Area of the MBR
+    mbr_area = mbr.area
+
+    # Rectangular fit is the ratio of the polygon's area to the MBR's area
+    if mbr_area > 0:
+        rect_fit = polygon_area / mbr_area
+    else:
+        rect_fit = 0  # To handle cases where MBR area is zero (unlikely for valid polygons)
+
+    return rect_fit
+
+# Calculate Compactness (Shape Index)
+def compactness(polygon):
+    # Area of the polygon
+    polygon_area = polygon.area
+
+    # Perimeter of the polygon
+    polygon_perimeter = polygon.length
+
+    # Compactness formula: 4 * pi * Area / (Perimeter^2)
+    if polygon_perimeter > 0:
+        compactness_value = (4 * np.pi * polygon_area) / (polygon_perimeter ** 2)
+    else:
+        compactness_value = 0  # To handle cases where perimeter is zero (unlikely for valid polygons)
+
+    return compactness_value
+
+
+
+"""
+Generating a series of Shape/Geometry Features
+"""
 subbd_gdf[['side_short', 'side_long']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_side_lengths(x)))
+# calculate the area, height, width, and perimeter of the polygons
+subbd_gdf[['bds_length', 'bds_width']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_length_width(x)))
+subbd_gdf['area'] = subbd_gdf['geometry'].area
+subbd_gdf['perimeter'] = subbd_gdf['geometry'].length
+subbd_gdf['len2wid'] = subbd_gdf.apply(lambda x: x['bds_length']/x['bds_width'], axis=1) # calculate the Length-to-Width Ratio
+# Rectangular Fit: A metric to evaluate how well the building fits into a rectangle (often higher for commercial buildings).
+subbd_gdf['rectangular_fit'] = subbd_gdf['geometry'].apply(rectangular_fit)
+# Compactness/Shape Index: Assess how regular or compact the shape of the building is (e.g., circular, rectangular).
+subbd_gdf['compactness'] = subbd_gdf['geometry'].apply(compactness)
 
 
 
 
-
-# 
+#
 # # Extract spectral information from NAIP
 # 
 # 
