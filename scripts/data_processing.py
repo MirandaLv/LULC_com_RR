@@ -9,6 +9,8 @@ import numpy as np
 from rasterstats import zonal_stats
 from shapely.geometry import LineString
 import ast
+from skimage import feature
+from skimage.measure import shannon_entropy
 
 
 working_dir = os.path.abspath('../')
@@ -102,7 +104,9 @@ subbd_gdf = bd_gdf[bd_gdf['zone_group'].isin(['commercial_industry', 'residentia
 
 subbd_gdf['geometry'] = subbd_gdf['poly_geo']
 subbd_gdf.drop(['poly_geo'], axis=1, inplace=True)
-# subbd_gdf.to_file('../data/processed/building_tag.shp')
+subbd_gdf['poly_id'] = range(1, len(subbd_gdf)+1)
+
+subbd_gdf.to_file('../data/processed/building_tag.shp')
 
 
 # Function to calculate the shortest and longest side of the polygon
@@ -172,21 +176,46 @@ def compactness(polygon):
     return compactness_value
 
 
+#
+# """
+# Generating a series of Shape/Geometry Features
+# """
+# subbd_gdf[['side_short', 'side_long']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_side_lengths(x)))
+# # calculate the area, height, width, and perimeter of the polygons
+# subbd_gdf[['bds_length', 'bds_width']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_length_width(x)))
+# subbd_gdf['area'] = subbd_gdf['geometry'].area
+# subbd_gdf['perimeter'] = subbd_gdf['geometry'].length
+# subbd_gdf['len2wid'] = subbd_gdf.apply(lambda x: x['bds_length']/x['bds_width'], axis=1) # calculate the Length-to-Width Ratio
+# # Rectangular Fit: A metric to evaluate how well the building fits into a rectangle (often higher for commercial buildings).
+# subbd_gdf['rectangular_fit'] = subbd_gdf['geometry'].apply(rectangular_fit)
+# # Compactness/Shape Index: Assess how regular or compact the shape of the building is (e.g., circular, rectangular).
+# subbd_gdf['compactness'] = subbd_gdf['geometry'].apply(compactness)
+
 
 """
-Generating a series of Shape/Geometry Features
+Generating texture features such as homogeneity, contrast, and entropy 
+Texture Homogeneity: Uniformity in texture (commercial buildings tend to have more uniform roofing materials, whereas residential buildings may have more varied textures).
+Contrast: Assess variation in pixel intensities within the object.
+Entropy: Quantifies randomness in texture; can differentiate materials used in buildings.
 """
-subbd_gdf[['side_short', 'side_long']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_side_lengths(x)))
-# calculate the area, height, width, and perimeter of the polygons
-subbd_gdf[['bds_length', 'bds_width']] = subbd_gdf['geometry'].apply(lambda x: pd.Series(calculate_length_width(x)))
-subbd_gdf['area'] = subbd_gdf['geometry'].area
-subbd_gdf['perimeter'] = subbd_gdf['geometry'].length
-subbd_gdf['len2wid'] = subbd_gdf.apply(lambda x: x['bds_length']/x['bds_width'], axis=1) # calculate the Length-to-Width Ratio
-# Rectangular Fit: A metric to evaluate how well the building fits into a rectangle (often higher for commercial buildings).
-subbd_gdf['rectangular_fit'] = subbd_gdf['geometry'].apply(rectangular_fit)
-# Compactness/Shape Index: Assess how regular or compact the shape of the building is (e.g., circular, rectangular).
-subbd_gdf['compactness'] = subbd_gdf['geometry'].apply(compactness)
 
+
+
+
+
+
+
+"""
+Generating Spectral Features 
+"""
+
+
+
+
+
+"""
+Generating Spatial/Contextual Features 
+"""
 
 
 
