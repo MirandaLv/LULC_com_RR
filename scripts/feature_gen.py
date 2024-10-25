@@ -10,13 +10,20 @@ from shapely.geometry import LineString
 import ast
 from skimage import feature
 from skimage.measure import shannon_entropy
-from helpers import calculate_side_lengths, calculate_length_width, rectangular_fit, compactness, process_polygons_and_calculate_features
+# from helpers import calculate_side_lengths, calculate_length_width, rectangular_fit, compactness, process_polygons_and_calculate_features
 import matplotlib.pyplot as plt
 
 working_dir = os.path.abspath('../')
 
+
 buildings = os.path.join(working_dir, 'data/processed/building_tag.shp')
 gdf = gpd.read_file(buildings)
+
+
+
+
+
+
 
 
 """
@@ -33,7 +40,6 @@ gdf['len2wid'] = gdf.apply(lambda x: x['bds_length']/x['bds_width'], axis=1) # c
 gdf['rectangular_fit'] = gdf['geometry'].apply(rectangular_fit)
 # Compactness/Shape Index: Assess how regular or compact the shape of the building is (e.g., circular, rectangular).
 gdf['compactness'] = gdf['geometry'].apply(compactness)
-
 
 
 """

@@ -100,10 +100,14 @@ subbd_gdf['geometry'] = subbd_gdf['poly_geo']
 subbd_gdf.drop(['poly_geo'], axis=1, inplace=True)
 subbd_gdf['poly_id'] = range(1, len(subbd_gdf)+1)
 
-
 subbd_gdf = subbd_gdf[subbd_gdf['Shape_Area'] > area_threshold]
 
-subbd_gdf.to_file('../data/processed/building_tag.shp')
+# subbd_gdf.to_file('../data/processed/building_tag.shp')
+
+
+
+
+
 
 
 
