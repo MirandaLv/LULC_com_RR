@@ -75,51 +75,57 @@ def compactness(polygon):
     return compactness_value
 
 
-# Function to read raster data and extract the region based on polygon
-def extract_raster_values(geotiff_path, polygon):
-    with rasterio.open(geotiff_path) as src:
-        out_image, out_transform = mask(src, [polygon], crop=True)
-        return out_image
 
-
-# Function to calculate the texture features (homogeneity, contrast, entropy)
-def calculate_texture_features(image_band):
-    image_band = np.squeeze(image_band)
-
-    # Ensure pixel values are integer for greycomatrix
-    image_band = np.round(image_band).astype(int)
-
-    # Compute the GLCM (Gray-Level Co-occurrence Matrix)
-    glcm = greycomatrix(image_band, [1], [0], symmetric=True, normed=True)
-
-    # Calculate Homogeneity and Contrast from the GLCM
-    homogeneity = greycoprops(glcm, 'homogeneity')[0, 0]
-    contrast = greycoprops(glcm, 'contrast')[0, 0]
-
-    # Calculate Entropy
-    entropy_value = shannon_entropy(image_band)
-
-    return homogeneity, contrast, entropy_value
-
-
-# Function to calculate spectral homogeneity (example: mean of pixel values as a placeholder)
-def calculate_spectral_homogeneity(image_bands):
-    # Here, we'll assume spectral homogeneity as the standard deviation of the band values across the region
-    spectral_homogeneity = np.std(image_bands, axis=(1, 2)).mean()
-    return spectral_homogeneity
-
-
-# Main function to iterate over polygons and calculate features
-def process_polygons_and_calculate_features(geotiff_path, polygon, band_index=0):
-
-    # Extract pixel values for the polygon from the geotiff
-    image_bands = extract_raster_values(geotiff_path, polygon)
-
-    # Calculate texture features from the selected band (band_index)
-    homogeneity, contrast, entropy_value = calculate_texture_features(image_bands[band_index])
-
-    # # Calculate spectral homogeneity
-    # spectral_homogeneity = calculate_spectral_homogeneity(image_bands)
-    return homogeneity, contrast, entropy_value
-
+#
+# from skimage.feature import greycomatrix, greycoprops
+# from rasterio.mask import mask
+#
+#
+# # Function to read raster data and extract the region based on polygon
+# def extract_raster_values(geotiff_path, polygon):
+#     with rasterio.open(geotiff_path) as src:
+#         out_image, out_transform = mask(src, [polygon], crop=True)
+#         return out_image
+#
+#
+# # Function to calculate the texture features (homogeneity, contrast, entropy)
+# def calculate_texture_features(image_band):
+#     image_band = np.squeeze(image_band)
+#
+#     # Ensure pixel values are integer for greycomatrix
+#     image_band = np.round(image_band).astype(int)
+#
+#     # Compute the GLCM (Gray-Level Co-occurrence Matrix)
+#     glcm = greycomatrix(image_band, [1], [0], symmetric=True, normed=True)
+#
+#     # Calculate Homogeneity and Contrast from the GLCM
+#     homogeneity = greycoprops(glcm, 'homogeneity')[0, 0]
+#     contrast = greycoprops(glcm, 'contrast')[0, 0]
+#
+#     # Calculate Entropy
+#     entropy_value = shannon_entropy(image_band)
+#
+#     return homogeneity, contrast, entropy_value
+#
+#
+# # Function to calculate spectral homogeneity (example: mean of pixel values as a placeholder)
+# def calculate_spectral_homogeneity(image_bands):
+#     # Here, we'll assume spectral homogeneity as the standard deviation of the band values across the region
+#     spectral_homogeneity = np.std(image_bands, axis=(1, 2)).mean()
+#     return spectral_homogeneity
+#
+#
+# # Main function to iterate over polygons and calculate features
+# def process_polygons_and_calculate_features(geotiff_path, polygon, band_index=0):
+#
+#     # Extract pixel values for the polygon from the geotiff
+#     image_bands = extract_raster_values(geotiff_path, polygon)
+#
+#     # Calculate texture features from the selected band (band_index)
+#     homogeneity, contrast, entropy_value = calculate_texture_features(image_bands[band_index])
+#
+#     # # Calculate spectral homogeneity
+#     # spectral_homogeneity = calculate_spectral_homogeneity(image_bands)
+#     return homogeneity, contrast, entropy_value
+#
 
