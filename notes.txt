@@ -1,0 +1,78 @@
+Data source: 
+
+JCC landuse: https://opendata-jcc.opendata.arcgis.com/search?groupIds=11bb7897183047c6ab8da83e30445cf8 This data includes “zoning” information about the types of buildings each are assigned, and residential, or others.  
+
+Residential: BLDG – Mobile Home, Multi-family, Residential, Retirement community, timeshare 
+
+Commercial: BLDG – church, commercial, public building,  
+
+BLDG – Building (only 2, delete), BLDG - Concrete/gravel (not include, playground), out building (looks like small house built in a yard) 
+
+ 
+
+York county: https://gis-data-dashboard-yorkcountyva.hub.arcgis.com/search?tags=land%2520record This data includes zoning information about different building types, the zoning categories are https://library.municode.com/va/york_county/codes/code_of_ordinances?nodeId=CD_ORD_CH24.1ZO_ARTIIIDI_DIV1INGE_S24.1-306TALAUS . Static map: https://www.yorkcounty.gov/DocumentCenter/View/790/Zoning-Map-PDF?bidId=  
+
+Residential: RC, RR, R33, R20, R13, RMF,  
+
+Commercial: IG, IL,  
+
+Determine which categories to be included for residential and commercial buildings. 
+
+ 
+
+Virginia parcel layer: https://vgin.maps.arcgis.com/home/item.html?id=29627d7c051a47dc8ce71b4484531ab3 
+
+Building footprint: https://vgin.vdem.virginia.gov/datasets/994d0afa44c046498f9774613671ce9a/about  
+
+ 
+
+"Agriculture", "Commercial/Industrial", "Paved", and “NO” 
+
+ 
+
+The obstacle is that it is hard to distinguish between the commercial buildings with the apartment residential buildings from the highly developed area.  
+
+Extract the area only be classified as highly developed, and extract the building foot print within that area, for training dataset construction.  
+
+ 
+
+ 
+
+Data processing 
+
+JCC 
+
+Categorize the zoning information into commercial and residential areas;  
+
+Filter the JCC landuse layer to only include buildings related categories; 
+
+Spatial join the filtered JCC layer with building footprint, thus each building footprint has a label, either commercial or residential. 
+
+York 
+
+Categorize the zoning information into commercial and residential areas; 
+
+Filter the York zoning layer to only include buildings related categories;  
+
+Spatial join the filtered JCC layer with building footprint, thus each building footprint has a label, either commercial or residential. 
+
+ 
+
+Make sure all layers are in the same projection 
+
+Features that can be used for the model classification 
+
+Shape/Geometry Features: length/width ratio, area, perimeter, width (bounding box), height (bounding box), longest side of the polygon, shortest side of the polygon (for irregular shape buildings, anomalies), rectangular fit (A metric to evaluate how well the building fits into a rectangle, often higher for commercial buildings?), compact index (Assess how regular or compact the shape of the building is);  
+
+Texture features: homogeneity (Uniformity in texture (commercial buildings tend to have more uniform roofing materials, whereas residential buildings may have more varied textures), contrast (Assess variation in pixel intensities within the object), and entropy (Quantifies randomness in texture). 
+
+Understanding the texture features https://lapi.fi-p.unam.mx/wp-content/uploads/Tutorial-GLCM.pdf  
+
+Spectral Features: mean, max, min, std of each building spectral signals; spectral homogeneity index calculation. 
+
+Spatial/Contextual Features: the neighboring information to be included (HOW?);  
+
+Initialize a simple ML algorithm to build up the baseline model performance in the classification of commercial and residential buildings, and see whether should explore further or not.  
+
+ 
+
