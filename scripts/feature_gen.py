@@ -21,9 +21,9 @@ naip_dir = os.path.join(working_dir, 'data/NAIP')
 buildings = os.path.join(working_dir, 'data/processed/building_tag_tiff.shp')
 gdf = gpd.read_file(buildings)
 
-geom_feat = False
-text_feat = False
-spec_feat = False
+geom_feat = True
+text_feat = True
+spec_feat = True
 """
 Generating a series of Shape/Geometry Features
 """
@@ -87,7 +87,6 @@ if text_feat:
 Generating Spectral Features
 A lower of Coefficient of Variation value indicates higher homogeneity.
 """
-
 if spec_feat:
     # Iterate over each unique GeoTIFF file reference
     spectral_features = []
@@ -95,53 +94,11 @@ if spec_feat:
     for geotiff_file in gdf['geotiff'].unique():
         # Filter polygons for the current GeoTIFF
         subset_gdf = gdf[gdf['geotiff'] == geotiff_file]
-
-        # Open corresponding GeoTIFF
-        with rasterio.open(f"{naip_dir}/{geotiff_file}") as src:
-
-            if subset_gdf.crs != src.crs:
-                subset_gdf = subset_gdf.to_crs(src.crs)
-
-            for idx, row in subset_gdf.iterrows():
-                # Mask the GeoTIFF with the polygon
-                geom = [row['geometry'].buffer(0.1)] # if polygons are lines or very narrow, mask can struggle, thus add a small buffer
-                out_image, out_transform = mask(src, geom, crop=True)
-                # calculate spectral features
-                out_image = out_image.astype('float32')
-                # Mask invalid data
-                out_image[out_image == src.nodata] = np.nan
-                # Calculate spectral features for each band
-                features = {}
-                for band in range(out_image.shape[0]):
-                    band_data = out_image[band, :, :]
-                    features[f'mean_b_{band + 1}'] = np.nanmean(band_data)
-                    features[f'std_b_{band + 1}'] = np.nanstd(band_data)
-                    features[f'median_b_{band + 1}'] = np.nanmedian(band_data)
-                    # Add other features as needed (e.g., min, max, etc.)
-                spectral_features.append(features)
-
-    # Add features to original GeoDataFrame
-    spectral_df = gpd.GeoDataFrame(spectral_features)
-    gdf = gdf.join(spectral_df)
-
-
-"""
-Generating Spatial/Contextual Features 
-"""
-
-if spec_feat_spectral:
-    # Iterate over each unique GeoTIFF file reference
-    spectral_features = []
-
-    for geotiff_file in gdf['geotiff'].unique():
-        # Filter polygons for the current GeoTIFF
-        subset_gdf = gdf[gdf['geotiff'] == geotiff_file]
-
+        # Create an empty list to store statistics for each subset_gdf
+        all_band_stats = []
         # Open corresponding GeoTIFF
         with rasterio.open(f"{naip_dir}/{geotiff_file}") as src:
             bands = src.count
-            # Create an empty list to store statistics for each polygon and each band
-            all_band_stats = []
 
             # Loop through each band in the GeoTIFF (1 to 4)
             for band_id in range(1, bands + 1):
@@ -150,41 +107,30 @@ if spec_feat_spectral:
 
                 # Calculate zonal statistics for the current band
                 stats = zonal_stats(subset_gdf, band_data, affine=src.transform,
-                                    stats=['min', 'max', 'mean', 'std', 'median', 'count'],
+                                    stats=['mean', 'std', 'median'],
                                     nodata=src.nodata)
 
-                # Append statistics for the current band
-                all_band_stats.append(stats)
+                stats_df = gpd.GeoDataFrame(stats)
+                stats_df['cv'] = stats_df['std'] / stats_df['mean']
+                stats_df['spc_homo'] = stats_df['cv'].apply(lambda x: 1/1+x) # 1 / 1 + 'cv'
+                stats_df = stats_df.rename(columns={"mean": f'b{band_id}_mean', "std": f'b{band_id}_std', "median": f'b{band_id}_median', "cv": f'b{band_id}_cv', "spc_homo": f'b{band_id}_spc_homo'})
+                all_band_stats.append(stats_df)
 
-# Extract spectral information from NAIP
+        sta_all_df = pd.concat(all_band_stats, axis=1) # for each subset_gdf get the all band statistics with the corresponding name changed
+        # reset the index of subset_df and sta_all_df, so they can merge on the axis=1, with correct dimensions
+        sta_all_df = sta_all_df.reset_index(drop=True)
+        subset_gdf = subset_gdf.reset_index(drop=True)
+
+        subset_gdf = pd.concat([subset_gdf, sta_all_df], axis=1) # combine the all band statistics with the subset_gdf
+        spectral_features.append(subset_gdf) # all columns variables are included
+
+    gdf = pd.concat(spectral_features, ignore_index=True) # concatenate rows
 
 
-# Load shapefile using geopandas
-shapefile = gpd.read_file(shapefile_path)
-
-# Open the 4-band GeoTIFF using rasterio
-with rasterio.open(geotiff_path) as src:
-    # Check the number of bands (should be 4)
-    bands = src.count
-
-    # Create an empty list to store statistics for each polygon and each band
-    all_band_stats = []
-
-    # Loop through each band in the GeoTIFF (1 to 4)
-    for band_id in range(1, bands + 1):
-        # Read data for the current band
-        band_data = src.read(band_id)
-
-        # Calculate zonal statistics for the current band
-        stats = zonal_stats(shapefile, band_data, affine=src.transform, stats=['min', 'max', 'mean', 'std', 'median', 'count'],
-                            nodata=src.nodata)
-
-        # Append statistics for the current band
-        all_band_stats.append(stats)
+gdf.to_file(os.path.join(working_dir, 'data/processed/building_features.shp'))
 
 
 
-
-
-
-
+"""
+Generating Spatial/Contextual Features 
+"""
