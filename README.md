@@ -12,3 +12,4 @@ Building footprints will be classified as either commercial or residential to he
 - geotiff_processing.py: combine the building footprint with the corresponding NAIP image;
 - feature_gen.py: feature generation for geometry (area, perimeter, ratio length/width), texture (texture homogeneity, contrast, and entropy), spectral (spectral homogeneity, mean, std,  cefficient of variation, etc);
 - training.py: model building, training, validation;
+- helper.py: functions to calculate different features;
