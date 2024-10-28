@@ -129,36 +129,60 @@ if spec_feat:
 Generating Spatial/Contextual Features 
 """
 
+if spec_feat_spectral:
+    # Iterate over each unique GeoTIFF file reference
+    spectral_features = []
+
+    for geotiff_file in gdf['geotiff'].unique():
+        # Filter polygons for the current GeoTIFF
+        subset_gdf = gdf[gdf['geotiff'] == geotiff_file]
+
+        # Open corresponding GeoTIFF
+        with rasterio.open(f"{naip_dir}/{geotiff_file}") as src:
+            bands = src.count
+            # Create an empty list to store statistics for each polygon and each band
+            all_band_stats = []
+
+            # Loop through each band in the GeoTIFF (1 to 4)
+            for band_id in range(1, bands + 1):
+                # Read data for the current band
+                band_data = src.read(band_id)
+
+                # Calculate zonal statistics for the current band
+                stats = zonal_stats(subset_gdf, band_data, affine=src.transform,
+                                    stats=['min', 'max', 'mean', 'std', 'median', 'count'],
+                                    nodata=src.nodata)
+
+                # Append statistics for the current band
+                all_band_stats.append(stats)
+
+# Extract spectral information from NAIP
 
 
-#
-# # Extract spectral information from NAIP
-#
-#
-# # Load shapefile using geopandas
-# shapefile = gpd.read_file(shapefile_path)
-#
-# # Open the 4-band GeoTIFF using rasterio
-# with rasterio.open(geotiff_path) as src:
-#     # Check the number of bands (should be 4)
-#     bands = src.count
-#
-#     # Create an empty list to store statistics for each polygon and each band
-#     all_band_stats = []
-#
-#     # Loop through each band in the GeoTIFF (1 to 4)
-#     for band_id in range(1, bands + 1):
-#         # Read data for the current band
-#         band_data = src.read(band_id)
-#
-#         # Calculate zonal statistics for the current band
-#         stats = zonal_stats(shapefile, band_data, affine=src.transform, stats=['min', 'max', 'mean', 'std', 'median', 'count'],
-#                             nodata=src.nodata)
-#
-#         # Append statistics for the current band
-#         all_band_stats.append(stats)
-#
-#
+# Load shapefile using geopandas
+shapefile = gpd.read_file(shapefile_path)
+
+# Open the 4-band GeoTIFF using rasterio
+with rasterio.open(geotiff_path) as src:
+    # Check the number of bands (should be 4)
+    bands = src.count
+
+    # Create an empty list to store statistics for each polygon and each band
+    all_band_stats = []
+
+    # Loop through each band in the GeoTIFF (1 to 4)
+    for band_id in range(1, bands + 1):
+        # Read data for the current band
+        band_data = src.read(band_id)
+
+        # Calculate zonal statistics for the current band
+        stats = zonal_stats(shapefile, band_data, affine=src.transform, stats=['min', 'max', 'mean', 'std', 'median', 'count'],
+                            nodata=src.nodata)
+
+        # Append statistics for the current band
+        all_band_stats.append(stats)
+
+
 
 
 
