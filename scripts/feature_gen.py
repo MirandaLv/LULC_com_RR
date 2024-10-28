@@ -10,15 +10,19 @@ from shapely.geometry import LineString
 import ast
 from skimage import feature
 from skimage.measure import shannon_entropy
-from helpers import calculate_side_lengths, calculate_length_width, rectangular_fit, compactness
+from helpers import calculate_side_lengths, calculate_length_width, rectangular_fit, compactness, calculate_texture_features
 import matplotlib.pyplot as plt
+from skimage.feature import greycomatrix, greycoprops
+from shapely.geometry import box
+from rasterio.mask import mask
 
 working_dir = os.path.abspath('../')
-
+naip_dir = os.path.join(working_dir, 'data/NAIP')
 buildings = os.path.join(working_dir, 'data/processed/building_tag_tiff.shp')
 gdf = gpd.read_file(buildings)
 
 geom_feat = False
+text_feat = False
 
 """
 Generating a series of Shape/Geometry Features
@@ -43,25 +47,40 @@ Texture Homogeneity: Uniformity in texture (commercial buildings tend to have mo
 Contrast: Assess variation in pixel intensities within the object.
 Entropy: Quantifies randomness in texture; can differentiate materials used in buildings.
 """
-from skimage.color import rgb2gray
-from skimage.feature import graycomatrix, graycoprops
-from matplotlib import pyplot as plt
 
-test_tiff = gdf['geotiff_na'][0]
+if text_feat:
+    # Iterate over each unique GeoTIFF file reference
+    texture_features = []
 
-# processing one image to calculate the glcm
-image = rasterio.open(os.path.join(working_dir, 'data/NAIP', test_tiff)).read()
-image = np.moveaxis(image, [0,1,2], [2,0,1]) # moving data dimension so can be read by skimage
-image = (255*rgb2gray(np.array(image[:,:,0:3]))).astype(np.uint8)
+    for geotiff_file in gdf['geotiff'].unique():
+        # Filter polygons for the current GeoTIFF
+        subset_gdf = gdf[gdf['geotiff'] == geotiff_file]
 
+        # Open corresponding GeoTIFF
+        with rasterio.open(f"{naip_dir}/{geotiff_file}") as src:
 
-# Generate GLCM
-distances = [50] # Offset
-angles = [np.pi/2]  # Vertical Direction
-glcm = graycomatrix(image, distances=distances, angles=angles,levels=255)
-print(glcm)
+            if subset_gdf.crs != src.crs:
+                subset_gdf = subset_gdf.to_crs(src.crs)
 
+            for idx, row in subset_gdf.iterrows():
+                # Mask the GeoTIFF with the polygon
+                geom = [row['geometry'].buffer(0.1)] # if polygons are lines or very narrow, mask can struggle, thus add a small buffer
+                out_image, out_transform = mask(src, geom, crop=True)
 
+                # Calculate texture features for each band
+                features = {}
+                for band_num in range(out_image.shape[0]):  # Loop over each band
+                    homogeneity, contrast, entropy = calculate_texture_features(out_image[band_num])
+                    features[f'band{band_num + 1}_homogeneity'] = homogeneity
+                    features[f'band{band_num + 1}_contrast'] = contrast
+                    features[f'band{band_num + 1}_entropy'] = entropy
+
+                # Append features to texture_features list
+                texture_features.append(features)
+
+    # Add features to original GeoDataFrame
+    features_df = gpd.GeoDataFrame(texture_features)
+    gdf = gdf.join(features_df)
 
 """
 Generating Spectral Features

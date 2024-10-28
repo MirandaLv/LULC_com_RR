@@ -75,6 +75,20 @@ def compactness(polygon):
     return compactness_value
 
 
+# Define a function to calculate texture features
+def calculate_texture_features(image_band):
+    # Normalize image band
+    image_band = np.clip(image_band, 0, 255).astype(np.uint8)
+
+    # Compute GLCM matrix
+    glcm = greycomatrix(image_band, [1], [0], symmetric=True, normed=True)
+
+    # Calculate texture properties
+    homogeneity = greycoprops(glcm, 'homogeneity')[0, 0]
+    contrast = greycoprops(glcm, 'contrast')[0, 0]
+    entropy = -np.sum(glcm * np.log2(glcm + (glcm == 0)))
+
+    return homogeneity, contrast, entropy
 
 #
 # from skimage.feature import greycomatrix, greycoprops

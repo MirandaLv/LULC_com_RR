@@ -24,7 +24,8 @@ for geotiff_path in geotiff_files:
     matching_buildings = gdf[gdf.within(geotiff_bounds)]
 
     # Update the 'geotiff_name' column for matching polygons
-    gdf.loc[matching_buildings.index, "geotiff_name"] = geotiff_name
+    gdf.loc[matching_buildings.index, "geotiff"] = geotiff_name
 
+gdf = gdf[gdf['geotiff'].notnull()] # remove polygons that has no geotiff data coverage
 # Save the updated GeoDataFrame back to a new shapefile
 gdf.to_file(os.path.join(working_dir, 'data/processed/building_tag_tiff.shp'))
