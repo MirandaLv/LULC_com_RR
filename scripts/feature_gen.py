@@ -23,7 +23,7 @@ gdf = gpd.read_file(buildings)
 
 geom_feat = False
 text_feat = False
-
+spec_feat = False
 """
 Generating a series of Shape/Geometry Features
 """
@@ -35,9 +35,9 @@ if geom_feat:
     gdf['perimeter'] = gdf['geometry'].length
     gdf['len2wid'] = gdf.apply(lambda x: x['bds_length']/x['bds_width'], axis=1) # calculate the Length-to-Width Ratio
     # Rectangular Fit: A metric to evaluate how well the building fits into a rectangle (often higher for commercial buildings).
-    gdf['rectangular_fit'] = gdf['geometry'].apply(rectangular_fit)
+    gdf['geo_rect_f'] = gdf['geometry'].apply(rectangular_fit)
     # Compactness/Shape Index: Assess how regular or compact the shape of the building is (e.g., circular, rectangular).
-    gdf['compactness'] = gdf['geometry'].apply(compactness)
+    gdf['geo_compac'] = gdf['geometry'].apply(compactness)
 
 
 
@@ -51,6 +51,7 @@ Entropy: Quantifies randomness in texture; can differentiate materials used in b
 if text_feat:
     # Iterate over each unique GeoTIFF file reference
     texture_features = []
+    spectral_features = []
 
     for geotiff_file in gdf['geotiff'].unique():
         # Filter polygons for the current GeoTIFF
@@ -71,9 +72,9 @@ if text_feat:
                 features = {}
                 for band_num in range(out_image.shape[0]):  # Loop over each band
                     homogeneity, contrast, entropy = calculate_texture_features(out_image[band_num])
-                    features[f'band{band_num + 1}_homogeneity'] = homogeneity
-                    features[f'band{band_num + 1}_contrast'] = contrast
-                    features[f'band{band_num + 1}_entropy'] = entropy
+                    features[f'b{band_num + 1}_tt_homo'] = homogeneity # the maximum length of name is 10
+                    features[f'b{band_num + 1}_tt_cont'] = contrast
+                    features[f'b{band_num + 1}_tt_etrp'] = entropy
 
                 # Append features to texture_features list
                 texture_features.append(features)
@@ -87,8 +88,41 @@ Generating Spectral Features
 A lower of Coefficient of Variation value indicates higher homogeneity.
 """
 
+if spec_feat:
+    # Iterate over each unique GeoTIFF file reference
+    spectral_features = []
 
+    for geotiff_file in gdf['geotiff'].unique():
+        # Filter polygons for the current GeoTIFF
+        subset_gdf = gdf[gdf['geotiff'] == geotiff_file]
 
+        # Open corresponding GeoTIFF
+        with rasterio.open(f"{naip_dir}/{geotiff_file}") as src:
+
+            if subset_gdf.crs != src.crs:
+                subset_gdf = subset_gdf.to_crs(src.crs)
+
+            for idx, row in subset_gdf.iterrows():
+                # Mask the GeoTIFF with the polygon
+                geom = [row['geometry'].buffer(0.1)] # if polygons are lines or very narrow, mask can struggle, thus add a small buffer
+                out_image, out_transform = mask(src, geom, crop=True)
+                # calculate spectral features
+                out_image = out_image.astype('float32')
+                # Mask invalid data
+                out_image[out_image == src.nodata] = np.nan
+                # Calculate spectral features for each band
+                features = {}
+                for band in range(out_image.shape[0]):
+                    band_data = out_image[band, :, :]
+                    features[f'mean_b_{band + 1}'] = np.nanmean(band_data)
+                    features[f'std_b_{band + 1}'] = np.nanstd(band_data)
+                    features[f'median_b_{band + 1}'] = np.nanmedian(band_data)
+                    # Add other features as needed (e.g., min, max, etc.)
+                spectral_features.append(features)
+
+    # Add features to original GeoDataFrame
+    spectral_df = gpd.GeoDataFrame(spectral_features)
+    gdf = gdf.join(spectral_df)
 
 
 """
