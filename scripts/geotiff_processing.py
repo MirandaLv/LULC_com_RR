@@ -12,10 +12,6 @@ def main(input_path, output_path):
         print(f"Error: Input directory '{input_path}' does not exist.")
         return
 
-    if os.path.exists(output_path):
-        print(f"Error: Output directory '{output_path}' exist.")
-        return
-
     # buildings = os.path.join(working_dir, 'data/processed/building_tag.shp')
 
     gdf = gpd.read_file(input_path)
@@ -39,9 +35,9 @@ def main(input_path, output_path):
 
 if __name__ == "__main__":
     working_dir = os.path.abspath('../')
-    naip_dir = os.path.join(working_dir, 'data/NAIP')
+    naip_dir = os.path.join(working_dir, 'data/NAIP/Mathew')
     geotiff_files = [os.path.join(naip_dir, i) for i in os.listdir(naip_dir) if i.endswith('.tif')]
-    inpath = os.path.join(working_dir, 'data/processed/building_tag.shp')
-    outpath = os.path.join(working_dir, 'data/processed/building_mathew_tiff.shp')
+    inpath = os.path.join(working_dir, 'data/buildingfootprint/Mathew/Mathew_buildingfootprint.shp')
+    outpath = os.path.join(working_dir, 'data/processed/Mathew/building_mathew_tiff.shp')
     main(inpath, outpath)
 
