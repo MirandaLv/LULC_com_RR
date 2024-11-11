@@ -1,0 +1,88 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.28.15-Firenze">
+  <identifier>Mathew_County</identifier>
+  <parentidentifier></parentidentifier>
+  <language>ENG</language>
+  <type>dataset</type>
+  <title>Mathew_County</title>
+  <abstract>The VA_COUNTY dataset is a feature class component of the Virginia Administrative Boundaries dataset from the Virginia Geographic Information Network (VGIN). VA_COUNTY represents the best available city and county boundary information to VGIN.
+VGIN initially sought to develop an improved locality and town boundary dataset in late 2013, spurred by response of the Virginia Administrative Boundaries Workgroup community. The feature class initially started from the locality boundaries from the Census TIGER dataset for Virginia. VGIN solicited input from localities in Virginia through the Road Centerlines data submission process as well as through public forums such as the Virginia Administrative Boundaries Workgroup and VGIN listservs. Data received were analyzed and incorporated into the VA_COUNTY feature class where locality data were a superior representation of the city or county boundary.
+
+VA_COUNTY is a feature class representing locality (county and city) boundaries in the Commonwealth of Virginia. This dataset was derived from Census TIGER data supplemented with data made available from the cities and counties themselves.
+
+The VA_TOWN dataset is a feature class component of the Virginia Administrative Boundaries dataset from the Virginia Geographic Information Network (VGIN). VA_COUNTY represents the best available city and county boundary information to VGIN.VGIN initially sought to develop an improved locality and town boundary dataset in late 2013, spurred by response of the Virginia Administrative Boundaries Workgroup community. The feature class initially started from the locality boundaries from the Census TIGER dataset for Virginia. VGIN solicited input from localities in Virginia through the Road Centerlines data submission process as well as through public forums such as the Virginia Administrative Boundaries Workgroup and VGIN listservs. Data received were analyzed and incorporated into the VA_COUNTY feature class where locality data were a superior representation of the city or county boundary.
+
+VA_COUNTY is a feature class representing locality (county and city) boundaries in the Commonwealth of Virginia. This dataset was derived from Census TIGER data supplemented with data made available from the cities and counties themselves.</abstract>
+  <keywords vocabulary="Search keys">
+    <keyword>Virginia</keyword>
+    <keyword>administrative</keyword>
+    <keyword>boundary</keyword>
+    <keyword>boundaries</keyword>
+    <keyword>Nation</keyword>
+    <keyword>Polygon</keyword>
+  </keywords>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>boundaries</keyword>
+    <keyword>Nation</keyword>
+  </keywords>
+  <contact>
+    <contactAddress>
+      <type></type>
+      <address></address>
+      <city></city>
+      <administrativearea></administrativearea>
+      <postalcode></postalcode>
+      <country></country>
+    </contactAddress>
+    <name>VBMP</name>
+    <organization>Virginia Information Technologies Agency</organization>
+    <position>VGIN Coordinator</position>
+    <voice></voice>
+    <fax></fax>
+    <email>VBMP@vita.virginia.gov</email>
+    <role>Point of contact</role>
+  </contact>
+  <contact>
+    <contactAddress>
+      <type>Mailing</type>
+      <address>4600 Silver Hill Road, Stop 7400</address>
+      <city>Washington</city>
+      <administrativearea>DC</administrativearea>
+      <postalcode>20233-7400</postalcode>
+      <country>United States</country>
+    </contactAddress>
+    <name>U.S. Department of Commerce, U.S. Census Bureau, &#xd;
+                         Geography Division, Geographic Products Branch</name>
+    <organization>U.S. Department of Commerce, U.S. Census Bureau, &#xd;
+                         Geography Division, Geographic Products Branch</organization>
+    <position></position>
+    <voice>301-763-1128</voice>
+    <fax>301-763-4710</fax>
+    <email>geo.tiger@census.gov</email>
+    <role>Point of contact</role>
+  </contact>
+  <links/>
+  <history>For more information, see Base Mapping page on the VGIN Website: https://vgin.vdem.virginia.gov/pages/base-mapping.</history>
+  <fees></fees>
+  <constraints type="Limitations of use">The Virginia Base Data layers are intended for cartographic use and spatial analysis only, and not for use as a legal description. Best efforts were undertaken to ensure the correctness of RCL, Address Points, Parcels, Administrative Boundaries, and Building Footprint data throughout the Commonwealth of Virginia, however, all warranties regarding the accuracy of the map data and any representation or inferences derived there from are hereby expressly disclaimed.</constraints>
+  <constraints type="Access">None</constraints>
+  <rights>Virginia Geographic Information Network (VGIN), and the Census and Localities and Towns submitting data to the project</rights>
+  <rights>The TIGER/Line Shapefile products are not copyrighted however TIGER/Line and Census TIGER are registered trademarks of the U.S. Census Bureau. These products are free to use in a product or publication, however acknowledgement must be given to the U.S. Census Bureau as the source. The boundary information in the TIGER/Line Shapefiles are for statistical data collection and tabulation purposes only; their depiction and designation for statistical purposes does not constitute a determination of jurisdictional authority or rights of ownership or entitlement and they are not legal land descriptions.Coordinates in the TIGER/Line shapefiles have six implied decimal places, but the positional accuracy of these coordinates is not as great as the six decimal places suggest.</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt></wkt>
+      <proj4></proj4>
+      <srsid>0</srsid>
+      <srid>0</srid>
+      <authid></authid>
+      <description></description>
+      <projectionacronym></projectionacronym>
+      <ellipsoidacronym></ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial miny="36.46367899999999906" maxy="39.47158199999999795" minz="0" crs="EPSG:4326" maxx="-75.13032300000000419" maxz="0" minx="-83.83789899999999307" dimensions="2"/>
+  </extent>
+</qgis>

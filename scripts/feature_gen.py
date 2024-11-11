@@ -17,8 +17,9 @@ from shapely.geometry import box
 from rasterio.mask import mask
 
 working_dir = os.path.abspath('../')
-naip_dir = os.path.join(working_dir, 'data/NAIP')
-buildings = os.path.join(working_dir, 'data/processed/building_tag_tiff.shp')
+naip_dir = os.path.join(working_dir, 'data/NAIP/Mathew')
+buildings = os.path.join(working_dir, 'data/processed/Mathew/building_mathew_tiff.shp')
+output_path = os.path.join(working_dir, 'data/processed/Mathew/mathew_building_features.shp')
 gdf = gpd.read_file(buildings)
 
 geom_feat = True
@@ -127,7 +128,7 @@ if spec_feat:
     gdf = pd.concat(spectral_features, ignore_index=True) # concatenate rows
 
 
-gdf.to_file(os.path.join(working_dir, 'data/processed/building_features.shp'))
+gdf.to_file(output_path)
 
 
 
