@@ -151,6 +151,6 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_res))
 
 
 # # Save the model without over or under sampling strategies
-joblib.dump(rf_model, os.path.join(working_dir, 'models/random_forest_model.pkl'))
+joblib.dump((rf_new, top_features), os.path.join(working_dir, 'models/random_forest_model.pkl')) # saving the top features used by the model
 # joblib.dump(clf_over_spl, os.path.join(working_dir, 'models/RF_overSampling.pkl'))
 # joblib.dump(clf_ud_spl, os.path.join(working_dir, 'models/RF_underSampling.pkl'))
