@@ -6,6 +6,17 @@ __pycache__/
 # C extensions
 *.so
 
+# data
+*.shp
+*.shx
+*.cpg
+*.qmd
+*.dbf
+*.prj
+*.tif
+*.tiff
+
+
 # Distribution / packaging
 .Python
 build/
