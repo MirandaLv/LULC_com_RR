@@ -7,7 +7,7 @@ import numpy as np
 from rasterio.features import geometry_mask
 
 
-def create_building_geotiff(landcover_path, shapefile_path, output_path):
+def create_building_geotiff(landcover_path, shapefile_path, output_path, key_name="predict"):
     # Open the landcover GeoTIFF
     with rasterio.open(landcover_path) as src:
         profile = src.profile  # Get the profile for the output GeoTIFF
@@ -23,7 +23,7 @@ def create_building_geotiff(landcover_path, shapefile_path, output_path):
     # Loop through the geometries in the shapefile
 
     # Process commercial buildings
-    commercial_geometries = gdf[gdf['predict'] == 'commercial_industry']['geometry']
+    commercial_geometries = gdf[gdf[key_name] == 'commercial_industry']['geometry']
 
     if not commercial_geometries.empty:
         commercial_mask = geometry_mask(
@@ -35,7 +35,7 @@ def create_building_geotiff(landcover_path, shapefile_path, output_path):
         classification[commercial_mask] = 1
 
     # Process residential buildings
-    residential_geometries = gdf[gdf['predict'] == 'residential']['geometry']
+    residential_geometries = gdf[gdf[key_name] == 'residential']['geometry']
     if not residential_geometries.empty:
         residential_mask = geometry_mask(
             residential_geometries,
@@ -76,6 +76,20 @@ def reclass_lulc(rst, outrst):
     # Save the reclassified GeoTIFF
     with rasterio.open(outrst, 'w', **profile) as dst:
         dst.write(reclassified_data, 1)
+
+
+
+def combine_lulc_building(lulc_path, building_path):
+
+    with rasterio.open(lulc_path) as src:
+        data = src.read(1)
+        profile = src.profile
+
+    # Create an empty canvas
+    reclassified_data = np.zeros_like(data, dtype=np.int32)
+
+    img_mask = data == 3 # 3 is the structure class
+    masked_array = data[img_mask]
 
 
 
