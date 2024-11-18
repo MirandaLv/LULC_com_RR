@@ -79,19 +79,62 @@ def reclass_lulc(rst, outrst):
 
 
 
-def combine_lulc_building(lulc_path, building_path):
+def combine_lulc_building(lulc_path, building_path, outpath):
 
-    with rasterio.open(lulc_path) as src:
-        data = src.read(1)
-        profile = src.profile
-
-    # Create an empty canvas
-    reclassified_data = np.zeros_like(data, dtype=np.int32)
-
-    img_mask = data == 3 # 3 is the structure class
-    masked_array = data[img_mask]
+    with rasterio.open(lulc_path) as src1:
+        lulc_data = src1.read(1)
+        profile = src1.profile  # Copy profile for output file
+        profile.update(dtype=rasterio.uint8)  # Ensure output data type is set correctly
 
 
+    with rasterio.open(building_path) as src2:
+        building_data = src2.read(1)
+
+    # Create a canvas
+    output_data = np.where(np.isin(lulc_data, [1, 2, 3, 4, 5, 6]), lulc_data, 0) # make sure all has value
+
+    # Reclassify 'structure' in lulc to either 'residential building' or 'commercial'
+    # based on the values in building raster (1=commercial_industry, 2=residential)
+    structure_mask = lulc_data == 3
+    output_data[structure_mask & (building_data == 1)] = 7  # 7 represents residential in the new output
+    output_data[structure_mask & (building_data == 2)] = 8  # 8 represents commercial in the new output
+
+    # Write the output GeoTIFF
+    with rasterio.open(outpath, 'w', **profile) as dst:
+        dst.write(output_data, 1)
+
+
+def combine_data(lulc_path, building_path, outpath):
+
+    with rasterio.open(building_path) as src1:
+        building_data = src1.read(1)
+        profile = src1.profile
+        profile.update(dtype=rasterio.uint8)  # Ensure output data type is set correctly
+
+    with rasterio.open(lulc_path) as src2:
+        lulc_data = src2.read(1)
+
+    # Initialize output data array filled with nodata value if defined, otherwise zeros
+    output_data = np.full_like(building_data, fill_value=0, dtype=np.uint8)
+
+    # Assign values for residential and commercial from the first layer
+    output_data[building_data == 1] = 1  # 1 for commercial_industry
+    output_data[building_data == 2] = 2  # 2 for residential
+
+    # Create a mask for areas not assigned in output_data
+    unassigned_mask = (building_data != 1) & (building_data != 2)
+
+    # Assign values from the lulc layer
+    output_data[(unassigned_mask) & (lulc_data == 1)] = 3  # Water
+    output_data[(unassigned_mask) & (lulc_data == 2)] = 4  # Road
+    output_data[(unassigned_mask) & (lulc_data == 3)] = 5  # Structure
+    output_data[(unassigned_mask) & (lulc_data == 4)] = 6  # Turf
+    output_data[(unassigned_mask) & (lulc_data == 5)] = 7  # Ag
+    output_data[(unassigned_mask) & (lulc_data == 6)] = 8  # Other
+
+    # Write the output GeoTIFF
+    with rasterio.open(outpath, 'w', **profile) as dst:
+        dst.write(output_data, 1)
 
 
 # lc_mapping = {1: "Water", 2: "Emergent wetland", 3: "Tree canopy", 4: "Scrub\Shrub",
