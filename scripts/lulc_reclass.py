@@ -1,6 +1,6 @@
 
 import os
-from lulc_processing import create_building_geotiff, reclass_lulc
+from lulc_processing import create_building_geotiff, reclass_lulc, combine_lulc_building, combine_data
 
 working_dir = os.path.abspath('../')
 # data_path = os.path.join(working_dir, 'data/lulc/math_51115_landcover_2018.tif')
@@ -8,7 +8,8 @@ lulc_path = os.path.join(working_dir, 'data/lulc/math_51115_lu_2018_26918.tif')
 lulc_reclass_path = os.path.join(working_dir, 'data/processed/Mathew/math_lu_2018_reclass.tif')
 
 building_path = os.path.join(working_dir, 'prediction/mathew_prediction.shp')
-building_rst_path = os.path.join(working_dir, 'prediction/mathew_building_rst.tif')
+# building_rst_path = os.path.join(working_dir, 'prediction/mathew_building_rst.tif')
+building_rst_path = os.path.join(working_dir, 'data/structure_inventory/mathew_structure_rst.tif')
 
 is_building_process = False
 is_lulc_process = False
@@ -29,10 +30,13 @@ Reclassify lulc
 if is_lulc_process:
     reclass_lulc(lulc_path, lulc_reclass_path)
 
-#
-# is_combined = True
-#
-# if is_combined:
+
+is_combined = True
+
+outpath = os.path.join(working_dir, 'prediction/lulc_structure_merge.tif')
+
+if is_combined:
+    combine_data(lulc_reclass_path, building_rst_path, outpath)
 
 
 

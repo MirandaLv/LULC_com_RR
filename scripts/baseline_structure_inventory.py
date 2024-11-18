@@ -31,7 +31,11 @@ if is_reclass_structure:
                      "Utility and Misc": "commercial_industry"}
 
     gdf['zone_group'] = gdf.OCC_CLS.map(class_mapping)
+    # Add a buffer of 2 meters
+    gdf['geometry'] = gdf.geometry.buffer(2)
     gdf.to_file(structure_reclass_path)
 
-create_building_geotiff(lulc_path, structure_reclass_path, building_rst_path, "zone_group")
+is_create_rst = False
+if is_create_rst:
+    create_building_geotiff(lulc_path, structure_reclass_path, building_rst_path, "zone_group")
 
