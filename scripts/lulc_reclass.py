@@ -19,7 +19,7 @@ is_lulc_process = False
 structure: commercial and residential -> 1, 2, 0
 """
 
-# Processing building data
+# Processing building data [from prediction]
 if is_building_process:
     create_building_geotiff(lulc_path, building_path, building_rst_path)
 
@@ -33,10 +33,10 @@ if is_lulc_process:
 
 is_combined = True
 
-outpath = os.path.join(working_dir, 'prediction/lulc_structure_merge.tif')
+out_path = os.path.join(working_dir, 'prediction/lulc_structure_merge.tif')
 
 if is_combined:
-    combine_data(lulc_reclass_path, building_rst_path, outpath)
+    combine_data(lulc_reclass_path, building_rst_path, out_path)
 
 
 
