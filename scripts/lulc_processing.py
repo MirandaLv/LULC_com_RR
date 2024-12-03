@@ -137,6 +137,7 @@ def combine_data(lulc_path, building_path, outpath):
         dst.write(output_data, 1)
 
 
+
 # lc_mapping = {1: "Water", 2: "Emergent wetland", 3: "Tree canopy", 4: "Scrub\Shrub",
 #               5: "Herbaceous", 6: "Barren", 7: "Structure", 8: "Other impervious",
 #               9: "Roads", 10: "Tree Canopy over Structures", 11: "Tree Canopy over Other Impervious",
