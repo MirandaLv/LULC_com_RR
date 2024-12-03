@@ -103,7 +103,7 @@ def main():
     Generating Spectral Features
     A lower of Coefficient of Variation value indicates higher homogeneity.
     """
-    if spec_feat:
+    if args.spec_feat:
         # Iterate over each unique GeoTIFF file reference
         spectral_features = []
 
@@ -142,7 +142,7 @@ def main():
 
         gdf = pd.concat(spectral_features, ignore_index=True) # concatenate rows
 
-    gdf.to_file(output_path)
+    gdf.to_file(args.output_file)
 
 
 if __name__ == "__main__":
