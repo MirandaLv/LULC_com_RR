@@ -30,12 +30,12 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser(description='Description of your script.')
-    parser.add_argument('input_file', type=str, help='Path to the input shapefile file.')
-    parser.add_argument('geotiff_dir', type=str, help='Path to the folder of NAIP images.')
-    parser.add_argument('geom_feat', type=str, help='Whether to generate geom features. default=False', default=False)
-    parser.add_argument('text_feat', type=str, help='Whether to generate texture features. default=False', default=False)
-    parser.add_argument('spec_feat', type=str, help='Whether to generate spectral features. default=False', default=False)
-    parser.add_argument('--output_file', type=str, help='Path to the output file.', default='output.shp')
+    parser.add_argument("-i", "input_file", type=str, help='Path to the input shapefile file.')
+    parser.add_argument("-d", "geotiff_dir", type=str, help='Path to the folder of NAIP images.')
+    parser.add_argument("-g", "geom_feat", type=bool, help='Whether to generate geom features. default=False', action="store_true")
+    parser.add_argument("-f", "text_feat", type=bool, help='Whether to generate texture features. default=False', action="store_true")
+    parser.add_argument("-s", "spec_feat", type=bool, help='Whether to generate spectral features. default=False', action="store_true")
+    parser.add_argument("-o", '--output_file', type=str, help='Path to the output file.', default='output.shp')
     args = parser.parse_args()
 
     gdf = gpd.read_file(args.input_file)
