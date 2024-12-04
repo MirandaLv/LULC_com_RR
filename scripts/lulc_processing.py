@@ -7,15 +7,21 @@ import numpy as np
 from rasterio.features import geometry_mask
 
 
-def create_building_geotiff(landcover_path, shapefile_path, output_path, key_name="predict"):
+def create_building_geotiff(landcover_path, shapefile_p, output_path, key_name="predict"):
+
+    if isinstance(shapefile_p, gpd.GeoDataFrame):
+        gdf = shapefile_p
+    elif os.path.isfile(shapefile_p) and shapefile_p.endswith("shp"):
+        # Read the shapefile
+        gdf = gpd.read_file(shapefile_p)
+    else:
+        raise TypeError("The input of building file should be either a GeoDataFrame or shapefile")
+
     # Open the landcover GeoTIFF
     with rasterio.open(landcover_path) as src:
         profile = src.profile  # Get the profile for the output GeoTIFF
         landcover_data = src.read(1)  # Read the data as a 2D array (assuming single-band landcover)
         transform = src.transform
-
-    # Read the shapefile
-    gdf = gpd.read_file(shapefile_path)
 
     # Create an empty array to hold the output classification
     classification = np.zeros_like(landcover_data, dtype=np.uint8)  # 0 by default
