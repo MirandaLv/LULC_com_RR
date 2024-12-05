@@ -17,6 +17,12 @@ from shapely.geometry import box
 from rasterio.mask import mask
 import argparse
 
+
+"""
+feature generation for geometry (area, perimeter, ratio length/width), texture (texture homogeneity, contrast, and entropy), 
+spectral (spectral homogeneity, mean, std, cefficient of variation, etc);
+"""
+
 # working_dir = os.path.abspath('../')
 # buildings = os.path.join(working_dir, 'data/processed/Mathew/building_mathew_tiff.shp')
 # naip_dir = os.path.join(working_dir, 'data/NAIP/Mathew')

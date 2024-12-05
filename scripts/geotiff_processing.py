@@ -6,13 +6,16 @@ import rasterio
 from shapely.geometry import box
 import argparse
 
+"""
+Combine the building footprint with the corresponding NAIP imagery; 
+"""
 
 def main():
 
     parser = argparse.ArgumentParser(description='Description of your script.')
-    parser.add_argument('input_file', type=str, help='Path to the input shapefile file.')
-    parser.add_argument('geotiff_dir', type=str, help='Path to the folder of NAIP images.')
-    parser.add_argument('--output_file', type=str, help='Path to the output file.', default='output.shp')
+    parser.add_argument("-i", '--input_file', type=str, help='Path to the input shapefile file.')
+    parser.add_argument("-it", '--geotiff_dir', type=str, help='Path to the folder of NAIP images.')
+    parser.add_argument("-o", '--output_file', type=str, help='Path to the output file.', default='output.shp')
     args = parser.parse_args()
 
     # Check if input and output directories exist
